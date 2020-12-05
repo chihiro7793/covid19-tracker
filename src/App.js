@@ -10,14 +10,15 @@ import Table from './components/app-table/Table';
 import Graph from './components/app-graph/Graph';
 import Header from './components/app-header/Header'
 import { sortData } from './functions/function';
-
+import numeral from 'numeral';
 function App() {
     const [countries, setCounteries] = useState([]);
     const [country, setCountry] = useState('worldwide');
     const [countryInfo, setCountryInfo] = useState({});
     const [table, setTable] = useState([]);
-    const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
-    const [mapZoom, setMapZoom] = useState(3);
+    const [mapCenter, setMapCenter] = useState({ lat: 32, lng: 53, zoom: 2 });
+    const [infoType, setInfoType] = useState('cases');
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         fetch('https://disease.sh/v3/covid-19/all')
@@ -30,14 +31,18 @@ function App() {
             await fetch('https://disease.sh/v3/covid-19/countries')
                 .then(response => response.json())
                 .then(data => {
-                    const countries = data.map(country => (
-                        {
-                            name: country.country,
-                            value: country.countryInfo.iso2
-                        }
-                    ));
+                    const countries = data.map(country => {
+                        return (
+                            {
+                                name: country.country,
+                                value: country.countryInfo.iso2
+                            }
+                        )
+                    });
                     setTable(sortData(data));
-                    setCounteries(countries)
+                    setData(data);
+                    setCounteries(countries);
+                    console.log(data);
                 });
         })();
     }, [])
@@ -53,6 +58,12 @@ function App() {
             .then(data => {
                 setCountry(countryCode);
                 setCountryInfo(data);
+                if (countryCode === 'worldwide') {
+                    setMapCenter({ lat: 32, lng: 53, zoom: 2 });
+                } else {
+                    setMapCenter({ lat: data.countryInfo.lat, lng: data.countryInfo.long, zoom: 3 });
+
+                }
             })
     }
     return (
@@ -66,23 +77,35 @@ function App() {
                 <div className="app__stats">
                     <InfoBox
                         title='Coronavirus Cases'
-                        cases={countryInfo.todayCases}
-                        total={countryInfo.cases}
+                        status={'red'}
+                        active={infoType === 'cases'}
+                        cases={`+${numeral(countryInfo.todayCases).format("0,0a")}`}
+                        total={`+${numeral(countryInfo.cases).format("0,0a")}`}
+                        onClick={() => setInfoType('cases')}
 
                     />
                     <InfoBox
                         title='Recovered'
-                        cases={countryInfo.todayRecovered}
-                        total={countryInfo.recovered}
-
+                        status={'green'}
+                        active={infoType === 'recovered'}
+                        cases={`+${numeral(countryInfo.todayRecovered).format("0,0a")}`}
+                        total={`+${numeral(countryInfo.recovered).format("0,0a")}`}
+                        onClick={() => setInfoType('recovered')}
                     />
                     <InfoBox
                         title='Deaths'
-                        cases={countryInfo.todayDeaths}
-                        total={countryInfo.deaths}
+                        status={'grey'}
+                        active={infoType === 'deaths'}
+                        cases={`+${numeral(countryInfo.todayDeaths).format("0,0a")}`}
+                        total={`+${numeral(countryInfo.deaths).format("0,0a")}`}
+                        onClick={() => setInfoType('deaths')}
                     />
                 </div>
-                <Map center={mapCenter} zoom={mapZoom} />
+                <Map data={data}
+                    center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
+                    zoom={mapCenter.zoom}
+                    type={infoType}
+                />
             </div>
             <Card className="app__side">
                 <CardContent className="card__container">
@@ -92,7 +115,7 @@ function App() {
                     </div>
                     <div className="card__countriesChart">
                         <h3>Worldwide new Cases</h3>
-                        <Graph casesType='cases' />
+                        <Graph casesType={infoType} />
                     </div>
 
                 </CardContent>

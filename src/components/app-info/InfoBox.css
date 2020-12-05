@@ -1,7 +1,40 @@
 .info-box{
     flex: 1;
+    cursor: pointer;
+
 }
 
-.info-box:not(:last-child) {
+.info-box:hover{
+   background-color: #ccc;
+}
+
+.info-box.green{
+    border-top:5px solid green;
+ }
+ .info-box.red{
+    border-top:5px solid red;
+ }
+ .info-box.grey{
+    border-top:5px solid grey;
+ }
+
+ .info-box:not(:last-child) {
     margin-right: 20px;
-  }
+}
+.info-box .ative{
+    border-top:5px solid green !important;
+}
+
+.infoBox__case.green{
+    color: green;
+}
+.infoBox__case.red{
+    color: red;
+}
+.infoBox__case.grey{
+    color: grey;
+}
+
+.infoBox__total{
+    color:rgb(111, 111, 111);
+}

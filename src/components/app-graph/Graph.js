@@ -38,7 +38,6 @@ const options = {
                     display: false,
                 },
                 ticks: {
-                    // Include a dollar sign in the ticks
                     callback: function (value, index, values) {
                         return numeral(value).format("0a");
                     },
@@ -49,23 +48,21 @@ const options = {
 };
 
 
-function Graph({ casesType = 'cases' }) {
+function Graph({ type = 'cases' }) {
     const [data, setData] = useState({});
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=120")
                 .then((response) => {
                     return response.json();
                 })
                 .then((data) => {
-                    let chartData = buildChartData(data, casesType);
+                    let chartData = buildChartData(data, type);
                     setData(chartData);
                 });
-        };
-
-        fetchData();
-    }, [casesType]);
+        })();
+    }, [type]);
 
     return (
         <div>
