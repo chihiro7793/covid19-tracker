@@ -11,6 +11,7 @@ import Graph from './components/app-graph/Graph';
 import Header from './components/app-header/Header'
 import { sortData } from './functions/function';
 import numeral from 'numeral';
+
 function App() {
     const [countries, setCounteries] = useState([]);
     const [country, setCountry] = useState('worldwide');
