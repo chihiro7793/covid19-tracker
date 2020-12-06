@@ -26,8 +26,8 @@ const DrawCircles = (data, type = 'cases') => {
                 <Popup className='map__popup'>
                     <img src={country.countryInfo.flag} alt={data.country} />
                     <div>Cases:{numeral(country.cases).format("0,0")}</div>
-                    <div>Recovered:{numeral(country.rocovered).format("0,0")}</div>
-                    <div>Deaths:{numeral(country.death).format("0,0")}</div>
+                    <div>Recovered:{numeral(country.recovered).format("0,0")}</div>
+                    <div>Deaths:{numeral(country.deaths).format("0,0")}</div>
                 </Popup>
             </Circle>
         )
