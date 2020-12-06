@@ -17,9 +17,10 @@ function App() {
     const [country, setCountry] = useState('worldwide');
     const [countryInfo, setCountryInfo] = useState({});
     const [table, setTable] = useState([]);
-    const [mapCenter, setMapCenter] = useState({ lat: 32, lng: 53, zoom: 2 });
+    const [mapCenter, setMapCenter] = useState({ lat: 32, lng: 53, zoom: 5 });
     const [infoType, setInfoType] = useState('cases');
     const [data, setData] = useState([]);
+    const [mode, setMode] = useState({ 0.2: 'green', 0.45: 'blue', 0.65: 'lime', 1: 'red' })
 
     useEffect(() => {
         fetch('https://disease.sh/v3/covid-19/all')
@@ -62,8 +63,7 @@ function App() {
                 if (countryCode === 'worldwide') {
                     setMapCenter({ lat: 32, lng: 53, zoom: 2 });
                 } else {
-                    setMapCenter({ lat: data.countryInfo.lat, lng: data.countryInfo.long, zoom: 3 });
-
+                    setMapCenter({ lat: data.countryInfo.lat, lng: data.countryInfo.long, zoom: 5 });
                 }
             })
     }
@@ -79,34 +79,50 @@ function App() {
                     <InfoBox
                         title='Coronavirus Cases'
                         status={'red'}
+                        mode={mode}
                         active={infoType === 'cases'}
                         cases={`+${numeral(countryInfo.todayCases).format("0,0a")}`}
                         total={`+${numeral(countryInfo.cases).format("0,0a")}`}
-                        onClick={() => setInfoType('cases')}
+                        onClick={() => {
+                            setInfoType('cases');
+                            console.log('modechanged');
+                            setMode({ 0.2: 'green', 0.45: 'blue', 0.65: 'lime', 1: 'red' });
+                        }}
 
                     />
                     <InfoBox
                         title='Recovered'
                         status={'green'}
+                        mode={mode}
                         active={infoType === 'recovered'}
                         cases={`+${numeral(countryInfo.todayRecovered).format("0,0a")}`}
                         total={`+${numeral(countryInfo.recovered).format("0,0a")}`}
-                        onClick={() => setInfoType('recovered')}
+                        onClick={() => {
+                            setInfoType('recovered');
+                            console.log('modechanged');
+                            setMode({ 0.45: 'yellow', 0.65: 'lime', 1: 'green' });
+                        }}
                     />
                     <InfoBox
                         title='Deaths'
                         status={'grey'}
+                        mode={mode}
                         active={infoType === 'deaths'}
                         cases={`+${numeral(countryInfo.todayDeaths).format("0,0a")}`}
                         total={`+${numeral(countryInfo.deaths).format("0,0a")}`}
-                        onClick={() => setInfoType('deaths')}
+                        onClick={() => {
+                            setInfoType('deaths');
+                            console.log('modechanged');
+                            setMode({ 0.45: 'yellow', 0.65: 'red', 1: 'black' })
+                        }}
                     />
                 </div>
-                <Map data={data}
+                {data.length && data ? <Map data={data}
                     center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
                     zoom={mapCenter.zoom}
                     type={infoType}
-                />
+                    mode={mode}
+                /> : <></>}
             </div>
             <Card className="app__side">
                 <CardContent className="card__container">
